@@ -30,7 +30,7 @@
 
   <actions>
     <!-- Add your actions here -->
-    <action id="androidCodeGenerator" class="AndroidCodeGenerator" text="Code generator"
+    <action id="androidCodeGenerator" class="peak.plugin.android.codegenerator.AndroidCodeGenerator" text="Code generator"
             description="Android code generator">
       <add-to-group group-id="GenerateGroup" anchor="first"/>
       <keyboard-shortcut keymap="$default" first-keystroke="shift alt A"/>
