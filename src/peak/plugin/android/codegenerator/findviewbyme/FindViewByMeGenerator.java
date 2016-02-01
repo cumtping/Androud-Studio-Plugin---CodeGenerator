@@ -12,6 +12,7 @@ import com.intellij.psi.PsiManager;
 import org.apache.http.util.TextUtils;
 import org.xml.sax.SAXException;
 import peak.plugin.android.codegenerator.CodeGeneratorDialog;
+import peak.plugin.android.codegenerator.utils.BaseGenerator;
 import peak.plugin.android.codegenerator.utils.CommonUtils;
 
 import javax.swing.event.TableModelEvent;
@@ -25,21 +26,18 @@ import java.util.List;
 /**
  * Created by wenping on 2016/1/31.
  */
-public class FindViewByMeGenerator implements CodeGeneratorDialog.FindViewByMeListener{
+public class FindViewByMeGenerator extends BaseGenerator implements CodeGeneratorDialog.FindViewByMeListener{
     private boolean isAddRootView;
     private boolean isViewHolder;
     private ViewSaxHandler viewSaxHandler;
     private List<ViewPart> viewParts;
     private DefaultTableModel tableModel;
-    CodeGeneratorDialog dialog;
-    AnActionEvent event;
 
     public FindViewByMeGenerator(CodeGeneratorDialog dialog, AnActionEvent event) {
+        super(dialog, event);
         isAddRootView = false;
         isViewHolder = false;
         viewSaxHandler = new ViewSaxHandler();
-        this.dialog = dialog;
-        this.event = event;
 
         dialog.setFindViewByMeListener(this);
         getViewList();
@@ -175,7 +173,8 @@ public class FindViewByMeGenerator implements CodeGeneratorDialog.FindViewByMeLi
     /**
      * 生成FindViewById代码
      */
-    private void generateCode() {
+    @Override
+    public void generateCode() {
         String javaBean = dialog.getJavaBean();
         String javaBeanUppercase = "";
         String javaBeanLowercase = "";
@@ -284,6 +283,11 @@ public class FindViewByMeGenerator implements CodeGeneratorDialog.FindViewByMeLi
             viewPart.setSelected(!viewPart.isSelected());
         }
         updateTable();
+    }
+
+    @Override
+    public void onConditionChanged() {
+        generateCode();
     }
 
 

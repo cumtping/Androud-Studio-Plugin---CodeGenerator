@@ -3,6 +3,7 @@ package peak.plugin.android.codegenerator;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import peak.plugin.android.codegenerator.findviewbyme.FindViewByMeGenerator;
+import peak.plugin.android.codegenerator.new_activity_instance.NewActivityInstanceGenerator;
 import peak.plugin.android.codegenerator.utils.ActionUtils;
 
 import java.awt.*;
@@ -17,6 +18,7 @@ public class AndroidCodeGenerator extends AnAction implements CodeGeneratorDialo
     private CodeGeneratorDialog codeGeneratorDialog;
     private AnActionEvent event;
     FindViewByMeGenerator findViewByMeGenerator;
+    NewActivityInstanceGenerator newActivityInstanceGenerator;
 
     @Override
     public void actionPerformed(AnActionEvent e) {
@@ -27,6 +29,8 @@ public class AndroidCodeGenerator extends AnAction implements CodeGeneratorDialo
         codeGeneratorDialog.setCodeGeneratorListener(this);
         // Find view by me.
         findViewByMeGenerator = new FindViewByMeGenerator(codeGeneratorDialog, event);
+        // new activity instance
+        newActivityInstanceGenerator = new NewActivityInstanceGenerator(codeGeneratorDialog, event);
 
         ActionUtils.showDialog(codeGeneratorDialog, "Code generator", event);
     }
