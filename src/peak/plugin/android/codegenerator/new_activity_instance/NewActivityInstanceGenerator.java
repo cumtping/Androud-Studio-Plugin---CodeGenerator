@@ -1,6 +1,7 @@
 package peak.plugin.android.codegenerator.new_activity_instance;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiField;
 import peak.plugin.android.codegenerator.CodeGeneratorDialog;
@@ -18,12 +19,16 @@ import java.util.List;
  */
 public class NewActivityInstanceGenerator extends BaseGenerator implements CodeGeneratorDialog.NewActivityInstanceListener{
     PsiClass psiClass;
+    AnActionEvent event;
     private List<FieldPart> fieldParts = new ArrayList<>();
     private DefaultTableModel tableModel;
+    String simpleFileName;
 
     public NewActivityInstanceGenerator(CodeGeneratorDialog dialog, AnActionEvent event) {
         super(dialog, event);
 
+        this.event = event;
+        simpleFileName = ActionUtils.getSimpleName(event.getData(LangDataKeys.PSI_FILE));
         psiClass = ActionUtils.getPsiClassFromContext(event);
         dialog.setNewActivityInstanceListener(this);
         getFieldList();
@@ -70,44 +75,57 @@ public class NewActivityInstanceGenerator extends BaseGenerator implements CodeG
         } else {
             stringBuilder.append("(Context c, ");
         }
+        // args
         for (FieldPart fieldPart : fieldParts) {
             if (fieldPart.isSelected()) {
                 stringBuilder.append(fieldPart.getType()).append(" ").append(fieldPart.getName()).append(", ");
             }
         }
         stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
-        stringBuilder.append("{\n    Intent intent = new Intent();\n");
+        stringBuilder.append("){\n    Intent intent = new Intent(c, ").append(simpleFileName).append(".class);\n");
 
+        // intent.putExtra();
         for (FieldPart fieldPart : fieldParts) {
             if (fieldPart.isSelected()) {
-                stringBuilder.append("    ").append("intent.putExtra(\"").append(fieldPart.getName()).append("\", ").
-                        append(fieldPart.getName()).append("}\n");
+                String key = getKeyString(fieldPart.getType(), fieldPart.getName());
+                stringBuilder.append("    ").append("intent.putExtra(").append(key).append(", ").
+                        append(fieldPart.getName()).append(");\n");
             }
         }
+        // startActivity
         if (forResult) {
-            stringBuilder.append("    c.startActivityResult(intent, ").append("reqCode").append(");\n}\n");
+            stringBuilder.append("    c.startActivityForResult(intent, ").append("reqCode").append(");\n}\n");
         } else {
             stringBuilder.append("    c.startActivity(intent);\n}\n");
         }
-        // get data
-        stringBuilder.append("private void getData() {\n    Intent intent = getIntent();\n    if (null == intent){\n        return;\n    }\n");
+        // getDataFromIntent();
+        stringBuilder.append("private void getDataFromIntent() {\n    Intent intent = getIntent();\n    if (null == intent){\n        return;\n    }\n");
         for (FieldPart fieldPart : fieldParts) {
             if (fieldPart.isSelected()) {
                 stringBuilder.append("    ").append(fieldPart.getName());
+                String key = getKeyString(fieldPart.getType(), fieldPart.getName());
                 if ("String".equals(fieldPart.getType())) {
-                    stringBuilder.append("= intent.getStringExtra(\"").append(fieldPart.getName()).append("\")\n");
+                    stringBuilder.append("= intent.getStringExtra(").append(key);
                 } else if ("int".equals(fieldPart.getType())) {
-                    stringBuilder.append("= intent.getIntExtra(\"").append(fieldPart.getName()).append("\", defaultValue)\n");
+                    stringBuilder.append("= intent.getIntExtra(").append(key).append(", defaultValue");
                 } else if ("boolean".equals(fieldPart.getType())) {
-                    stringBuilder.append("= intent.getBooleanExtra(\"").append(fieldPart.getName()).append("\", defaultValue)\n");
+                    stringBuilder.append("= intent.getBooleanExtra(").append(key).append(", defaultValue");
                 } else {
-                    stringBuilder.append("= intent.getParcelable / Serializable Extra(\"").append(fieldPart.getName()).append("\", defaultValue)\n");
+                    stringBuilder.append("= (").append(fieldPart.getType()).append(")intent.getParcelable / Serializable Extra(").append(key);
                 }
             }
         }
-        stringBuilder.append("}");
+        stringBuilder.append(");\n}");
 
         dialog.setTextCode(stringBuilder.toString());
+    }
+
+    private String getKeyString(String valueType, String valueName) {
+        if ("String".equals(valueType) || "int".equals(valueType) || "boolean".equals(valueType)) {
+            return "\"" + valueName + "\"";
+        } else {
+            return valueType + ".class.getSimpleName()";
+        }
     }
 
     private void getFieldList() {
@@ -175,5 +193,7 @@ public class NewActivityInstanceGenerator extends BaseGenerator implements CodeG
             }
         });
         dialog.setFieldModel(tableModel);
+
+        generateCode();
     }
 }

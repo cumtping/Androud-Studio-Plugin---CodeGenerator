@@ -38,4 +38,11 @@ public class ActionUtils {
 
         return PsiTreeUtil.getParentOfType(element, PsiClass.class);
     }
+
+    public static String getSimpleName(final PsiFile psiFile) {
+        if (psiFile == null) {
+            return null;
+        }
+        return psiFile.getVirtualFile().getNameWithoutExtension();
+    }
 }
