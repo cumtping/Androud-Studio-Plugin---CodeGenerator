@@ -35,12 +35,6 @@ public class CodeGeneratorDialog extends BaseJDialog{
     private JPanel tabNewActivityInstance;
     private JCheckBox chbForResult;
     private JTable tableField;
-    private JPanel tabCustom;
-    private JTextArea textCustomCode;
-    private JSpinner spinnerSavedCustom;
-    private JButton btnSaveCustom;
-    private JTextField customName;
-    private JButton btnDeleteCustom;
 
     private FindViewByMeListener findViewByMeListener;
     private CodeGeneratorListener codeGeneratorListener;

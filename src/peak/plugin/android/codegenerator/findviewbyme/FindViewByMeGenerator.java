@@ -83,9 +83,6 @@ public class FindViewByMeGenerator extends BaseGenerator implements CodeGenerato
         if (sel != null) {
             String classFilePath = psiFile.getContainingDirectory().toString().replace("PsiDirectory:", "");
             String xmlFileName = sel.getSelectedText();
-            if (!classFilePath.contains("java")) {
-                return null;
-            }
             String xmlFilePath = classFilePath.substring(0, classFilePath.indexOf("java")) + "res\\layout\\" + xmlFileName + ".xml";
             System.out.println(xmlFilePath);
             File file = new File(xmlFilePath);
