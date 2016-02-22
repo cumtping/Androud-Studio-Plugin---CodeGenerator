@@ -2,16 +2,16 @@
 # 中文
 一个可以为你自动生成代码的android studio插件。
 
-感谢jaeger. 本插件参考了: https://github.com/laobie/FindViewByMe 
+感谢jaeger. 本插件参考了: https://github.com/laobie/FindViewByMe <br>
 
 目前的用途：<br>
-1 FindViewByMe
+1 FindViewByMe <br>
   自动生成findViewById代码，为你节省定义控件的时间。支持ViewHolder、m前缀。<br>
   根据控件生成Java bean，以及setText、getText方法。<br>
-2 NewActivityInstance
+2 NewActivityInstance <br>
   自动生成Activity的newInstance/newInstanceForResult方法，为你节省activity传值的时间。<br>
-3 CustomTemplate
-  自动编译执行指定的方法，让你随心所欲的定制代码模板。
+3 CustomTemplate <br>
+  自动编译执行指定的方法，让你随心所欲的定制代码模板。<br>
 
 # English
 Thanks for jaeger. I refer to his plugin: https://github.com/laobie/FindViewByMe 
