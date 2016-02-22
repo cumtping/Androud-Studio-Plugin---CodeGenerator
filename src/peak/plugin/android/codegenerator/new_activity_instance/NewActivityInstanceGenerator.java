@@ -2,11 +2,10 @@ package peak.plugin.android.codegenerator.new_activity_instance;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiField;
 import peak.plugin.android.codegenerator.CodeGeneratorDialog;
 import peak.plugin.android.codegenerator.utils.ActionUtils;
-import peak.plugin.android.codegenerator.utils.BaseGenerator;
+import peak.plugin.android.codegenerator.base.BaseGenerator;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -18,8 +17,6 @@ import java.util.List;
  * Created by wenping on 2016/1/31.
  */
 public class NewActivityInstanceGenerator extends BaseGenerator implements CodeGeneratorDialog.NewActivityInstanceListener{
-    PsiClass psiClass;
-    AnActionEvent event;
     private List<FieldPart> fieldParts = new ArrayList<>();
     private DefaultTableModel tableModel;
     String simpleFileName;
@@ -27,9 +24,7 @@ public class NewActivityInstanceGenerator extends BaseGenerator implements CodeG
     public NewActivityInstanceGenerator(CodeGeneratorDialog dialog, AnActionEvent event) {
         super(dialog, event);
 
-        this.event = event;
         simpleFileName = ActionUtils.getSimpleName(event.getData(LangDataKeys.PSI_FILE));
-        psiClass = ActionUtils.getPsiClassFromContext(event);
         dialog.setNewActivityInstanceListener(this);
         getFieldList();
         updateTable();
@@ -57,11 +52,6 @@ public class NewActivityInstanceGenerator extends BaseGenerator implements CodeG
             fieldPart.setSelected(!fieldPart.isSelected());
         }
         updateTable();
-    }
-
-    @Override
-    public void onConditionChanged() {
-        generateCode();
     }
 
     @Override
@@ -192,7 +182,7 @@ public class NewActivityInstanceGenerator extends BaseGenerator implements CodeG
                 }
             }
         });
-        dialog.setFieldModel(tableModel);
+        dialog.setNewActivityInstanceModel(tableModel);
 
         generateCode();
     }

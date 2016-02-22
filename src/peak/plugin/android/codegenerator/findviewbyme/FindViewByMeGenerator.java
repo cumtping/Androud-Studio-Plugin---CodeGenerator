@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -12,7 +11,8 @@ import com.intellij.psi.PsiManager;
 import org.apache.http.util.TextUtils;
 import org.xml.sax.SAXException;
 import peak.plugin.android.codegenerator.CodeGeneratorDialog;
-import peak.plugin.android.codegenerator.utils.BaseGenerator;
+import peak.plugin.android.codegenerator.utils.ActionUtils;
+import peak.plugin.android.codegenerator.base.BaseGenerator;
 import peak.plugin.android.codegenerator.utils.CommonUtils;
 
 import javax.swing.event.TableModelEvent;
@@ -49,12 +49,15 @@ public class FindViewByMeGenerator extends BaseGenerator implements CodeGenerato
      * @param event 触发事件
      */
     public void getViewList() {
-        PsiFile psiFile = getXmlPisFile(event);//event.getData(LangDataKeys.PSI_FILE);
+        PsiFile psiFile = getXmlPisFile(event);//
         Editor editor = event.getData(PlatformDataKeys.EDITOR);
         if (psiFile == null || editor == null) {
             return;
         }
         String contentStr = psiFile.getText();
+        if (contentStr == null) {
+            return;
+        }
         if (psiFile.getParent() != null) {
             viewSaxHandler.setLayoutPath(psiFile.getContainingDirectory().toString().replace("PsiDirectory:", ""));
             viewSaxHandler.setProject(event.getProject());
@@ -73,16 +76,12 @@ public class FindViewByMeGenerator extends BaseGenerator implements CodeGenerato
 
     public PsiFile getXmlPisFile(AnActionEvent event) {
         PsiFile psiFile = event.getData(LangDataKeys.PSI_FILE);
-        Editor editor = event.getData(PlatformDataKeys.EDITOR);
-
-        if (null == psiFile || null == editor) {
+        if (null == psiFile) {
             return null;
         }
-
-        SelectionModel sel = editor.getSelectionModel();
-        if (sel != null) {
+        String xmlFileName = ActionUtils.getSelection(event);
+        if (xmlFileName != null) {
             String classFilePath = psiFile.getContainingDirectory().toString().replace("PsiDirectory:", "");
-            String xmlFileName = sel.getSelectedText();
             String xmlFilePath = classFilePath.substring(0, classFilePath.indexOf("java")) + "res\\layout\\" + xmlFileName + ".xml";
             System.out.println(xmlFilePath);
             File file = new File(xmlFilePath);
@@ -166,7 +165,7 @@ public class FindViewByMeGenerator extends BaseGenerator implements CodeGenerato
                 }
             }
         });
-        dialog.setModel(tableModel);
+        dialog.setFindViewByMyModel(tableModel);
         generateCode();
     }
 
@@ -175,6 +174,9 @@ public class FindViewByMeGenerator extends BaseGenerator implements CodeGenerato
      */
     @Override
     public void generateCode() {
+        if (viewParts == null) {
+            return;
+        }
         String javaBean = dialog.getJavaBean();
         String javaBeanUppercase = "";
         String javaBeanLowercase = "";
@@ -263,6 +265,9 @@ public class FindViewByMeGenerator extends BaseGenerator implements CodeGenerato
 
     @Override
     public void onSelectAll() {
+        if (viewParts == null) {
+            return;
+        }
         for (ViewPart viewPart : viewParts) {
             viewPart.setSelected(true);
         }
@@ -271,6 +276,9 @@ public class FindViewByMeGenerator extends BaseGenerator implements CodeGenerato
 
     @Override
     public void onSelectNone() {
+        if (viewParts == null) {
+            return;
+        }
         for (ViewPart viewPart : viewParts) {
             viewPart.setSelected(false);
         }
@@ -285,18 +293,15 @@ public class FindViewByMeGenerator extends BaseGenerator implements CodeGenerato
         updateTable();
     }
 
-    @Override
-    public void onConditionChanged() {
-        generateCode();
-    }
-
-
     /**
      * 切换控件名称
      *
      * @param isAddM 是否添加"m"
      */
     private void switchViewName(boolean isAddM) {
+        if (viewParts == null) {
+            return;
+        }
         if (isAddM) {
             for (ViewPart viewPart : viewParts) {
                 viewPart.addM2Name();

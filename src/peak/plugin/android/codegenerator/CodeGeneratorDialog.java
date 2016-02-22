@@ -1,13 +1,11 @@
 package peak.plugin.android.codegenerator;
 
-import peak.plugin.android.codegenerator.new_activity_instance.NewActivityInstanceGenerator;
-import peak.plugin.android.codegenerator.utils.BaseJDialog;
+import peak.plugin.android.codegenerator.base.BaseJDialog;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -17,7 +15,7 @@ import java.awt.event.ActionListener;
 public class CodeGeneratorDialog extends BaseJDialog{
 
     private JPanel contentPane;
-    private JTabbedPane tabbedPane1;
+    private JTabbedPane tabbedPane;
     private JPanel tabFindViewByMe;
     private JCheckBox chbAddRootView;
     private JTextField textRootView;
@@ -32,38 +30,42 @@ public class CodeGeneratorDialog extends BaseJDialog{
     private JTextField textBeanClass;
     private JButton btnCopyCode;
     private JButton btnClose;
-    private JPanel tabNewActivityInstance;
     private JCheckBox chbForResult;
     private JTable tableField;
+    private JTable tableMethod;
+    private JPanel tabNewActivityInstance;
+    private JPanel tabCustomTemplate;
 
     private FindViewByMeListener findViewByMeListener;
     private CodeGeneratorListener codeGeneratorListener;
     private NewActivityInstanceListener newActivityInstanceListener;
+    private CustomTemplateListener customTemplateListener;
 
+    public interface TableSelectListener {
+        void onSelectAll();
+        void onSelectNone();
+        void onNegativeSelect();
+    }
     public interface CodeGeneratorListener{
         void onCopyCode();
         void onFinish();
-        void onCreate();
     }
 
-    public interface FindViewByMeListener {
+    public interface FindViewByMeListener extends TableSelectListener{
         void onAddRootView();
         void onSwitchAddRootView(boolean isAddRootView);
         void onSwitchAddM(boolean addM);
         void onSwitchIsViewHolder(boolean isViewHolder);
-        void onSelectAll();
-        void onSelectNone();
-        void onNegativeSelect();
-        void onConditionChanged();
+        void generateCode();
     }
 
-    public interface NewActivityInstanceListener{
-        void onSelectAll();
-        void onSelectNone();
-        void onNegativeSelect();
-        void onConditionChanged();
+    public interface NewActivityInstanceListener extends TableSelectListener{
+        void generateCode();
     }
 
+    public interface CustomTemplateListener extends TableSelectListener{
+        void generateCode();
+    }
     public CodeGeneratorDialog() {
         setContentPane(contentPane);
         setModal(true);
@@ -127,6 +129,8 @@ public class CodeGeneratorDialog extends BaseJDialog{
                     findViewByMeListener.onSelectAll();
                 } else if (isNewActivityInstanceTabSelected() && newActivityInstanceListener != null) {
                     newActivityInstanceListener.onSelectAll();
+                } else if (isCustomTemplateTabSelected() && customTemplateListener != null) {
+                    customTemplateListener.onSelectAll();
                 }
             }
         });
@@ -137,6 +141,8 @@ public class CodeGeneratorDialog extends BaseJDialog{
                     findViewByMeListener.onSelectNone();
                 } else if (isNewActivityInstanceTabSelected() && newActivityInstanceListener != null) {
                     newActivityInstanceListener.onSelectNone();
+                } else if (isCustomTemplateTabSelected() && customTemplateListener != null) {
+                    customTemplateListener.onSelectNone();
                 }
             }
         });
@@ -147,6 +153,8 @@ public class CodeGeneratorDialog extends BaseJDialog{
                     findViewByMeListener.onNegativeSelect();
                 } else if (isNewActivityInstanceTabSelected() && newActivityInstanceListener != null) {
                     newActivityInstanceListener.onNegativeSelect();
+                } else if (isCustomTemplateTabSelected() && customTemplateListener != null) {
+                    customTemplateListener.onNegativeSelect();
                 }
             }
         });
@@ -154,31 +162,39 @@ public class CodeGeneratorDialog extends BaseJDialog{
             @Override
             public void stateChanged(ChangeEvent e) {
                 if (newActivityInstanceListener != null) {
-                    newActivityInstanceListener.onConditionChanged();
+                    newActivityInstanceListener.generateCode();
                 }
             }
         });
 
-        tabbedPane1.addChangeListener(new ChangeListener() {
+        tabbedPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
+                textCode.setText("");
                 if (isFindViewByMeTabSelected() && findViewByMeListener != null) {
-                    findViewByMeListener.onConditionChanged();
+                    findViewByMeListener.generateCode();
                 } else if (isNewActivityInstanceTabSelected() && newActivityInstanceListener != null) {
-                    newActivityInstanceListener.onConditionChanged();
+                    newActivityInstanceListener.generateCode();
+                } else if (isNewActivityInstanceTabSelected() && newActivityInstanceListener != null) {
+                    customTemplateListener.generateCode();
                 }
             }
         });
     }
 
     private boolean isFindViewByMeTabSelected() {
-        String title = tabbedPane1.getTitleAt(tabbedPane1.getSelectedIndex());
+        String title = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
         return "FindViewByMe".equals(title.trim());
     }
 
     private boolean isNewActivityInstanceTabSelected() {
-        String title = tabbedPane1.getTitleAt(tabbedPane1.getSelectedIndex());
+        String title = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
         return "NewActivityInstance".equals(title.trim());
+    }
+
+    private boolean isCustomTemplateTabSelected() {
+        String title = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
+        return "CustomTemplate".equals(title.trim());
     }
 
     @Override
@@ -197,14 +213,27 @@ public class CodeGeneratorDialog extends BaseJDialog{
         this.codeGeneratorListener = codeGeneratorListener;
     }
 
-    public void setModel(DefaultTableModel model) {
+    public CustomTemplateListener getCustomTemplateListener() {
+        return customTemplateListener;
+    }
+
+    public void setCustomTemplateListener(CustomTemplateListener customTemplateListener) {
+        this.customTemplateListener = customTemplateListener;
+    }
+
+    public void setFindViewByMyModel(DefaultTableModel model) {
         tableViews.setModel(model);
         tableViews.getColumnModel().getColumn(0).setPreferredWidth(20);
     }
 
-    public void setFieldModel(DefaultTableModel model) {
+    public void setNewActivityInstanceModel(DefaultTableModel model) {
         tableField.setModel(model);
         tableField.getColumnModel().getColumn(0).setPreferredWidth(20);
+    }
+
+    public void setTabCustomTemplateModel(DefaultTableModel model) {
+        tableMethod.setModel(model);
+        tableMethod.getColumnModel().getColumn(0).setPreferredWidth(20);
     }
 
     public void setTextCode(String codeStr) {

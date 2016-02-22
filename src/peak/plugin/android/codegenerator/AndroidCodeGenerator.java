@@ -2,6 +2,7 @@ package peak.plugin.android.codegenerator;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import peak.plugin.android.codegenerator.custom_template.CustomTemplateGenerator;
 import peak.plugin.android.codegenerator.findviewbyme.FindViewByMeGenerator;
 import peak.plugin.android.codegenerator.new_activity_instance.NewActivityInstanceGenerator;
 import peak.plugin.android.codegenerator.utils.ActionUtils;
@@ -19,6 +20,7 @@ public class AndroidCodeGenerator extends AnAction implements CodeGeneratorDialo
     private AnActionEvent event;
     FindViewByMeGenerator findViewByMeGenerator;
     NewActivityInstanceGenerator newActivityInstanceGenerator;
+    CustomTemplateGenerator customTemplateGenerator;
 
     @Override
     public void actionPerformed(AnActionEvent e) {
@@ -31,6 +33,8 @@ public class AndroidCodeGenerator extends AnAction implements CodeGeneratorDialo
         findViewByMeGenerator = new FindViewByMeGenerator(codeGeneratorDialog, event);
         // new activity instance
         newActivityInstanceGenerator = new NewActivityInstanceGenerator(codeGeneratorDialog, event);
+        // custom template
+        customTemplateGenerator = new CustomTemplateGenerator(codeGeneratorDialog, event);
 
         ActionUtils.showDialog(codeGeneratorDialog, "Code generator", event);
     }
@@ -44,11 +48,6 @@ public class AndroidCodeGenerator extends AnAction implements CodeGeneratorDialo
 
     @Override
     public void onFinish() {
-
-    }
-
-    @Override
-    public void onCreate() {
 
     }
 }

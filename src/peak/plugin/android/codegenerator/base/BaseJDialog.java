@@ -1,4 +1,4 @@
-package peak.plugin.android.codegenerator.utils;
+package peak.plugin.android.codegenerator.base;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
