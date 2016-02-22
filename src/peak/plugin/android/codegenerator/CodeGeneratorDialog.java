@@ -35,6 +35,8 @@ public class CodeGeneratorDialog extends BaseJDialog{
     private JTable tableMethod;
     private JPanel tabNewActivityInstance;
     private JPanel tabCustomTemplate;
+    private JPanel tabHelp;
+    private JTextPane textHelp;
 
     private FindViewByMeListener findViewByMeListener;
     private CodeGeneratorListener codeGeneratorListener;
@@ -69,6 +71,8 @@ public class CodeGeneratorDialog extends BaseJDialog{
     public CodeGeneratorDialog() {
         setContentPane(contentPane);
         setModal(true);
+
+        initHelpTab();
 
         textRootView.setEnabled(false);
         btnAddRootView.setEnabled(false);
@@ -180,6 +184,21 @@ public class CodeGeneratorDialog extends BaseJDialog{
                 }
             }
         });
+    }
+
+    private void initHelpTab() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("**************************** FindViewByMe *********************\n");
+        sb.append("1 在activity等文件中选中xml文件名，启动插件;\n");
+        sb.append("2 选择自动生成findViewById、setOnClickerListener、setText、getText等方法;\n");
+        sb.append("\n********************* NewActivityInstance *********************\n");
+        sb.append("1 在需要传递参数的activity中启动插件;\n");
+        sb.append("2 选择接受参数的成员变量，自动生成startActivity、startActivityForResult、getDataFromIntent等方法;\n");
+        sb.append("\n************************** CustomTemplate *********************\n");
+        sb.append("1 新建类，如'CustomTemplate.java';\n");
+        sb.append("2 编写不带参数的模板方法，如\n　public static void test() {\n　　System.out.println(\"hello world\");\n　}　\n");
+        sb.append("3 启动插件页面，选中test方法，插件会编译CustomTemplate.java并执行test方法，并将System.out.println的结果输出;\n");
+        textHelp.setText(sb.toString());
     }
 
     private boolean isFindViewByMeTabSelected() {
