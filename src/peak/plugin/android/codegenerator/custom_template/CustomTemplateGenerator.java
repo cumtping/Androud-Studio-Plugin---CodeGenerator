@@ -28,11 +28,12 @@ public class CustomTemplateGenerator extends BaseGenerator implements CodeGenera
 
     public CustomTemplateGenerator(CodeGeneratorDialog dialog, AnActionEvent event) {
         super(dialog, event);
+
         dialog.setCustomTemplateListener(this);
 
         getTemplatePath();
         getMethodList();
-        updateTable();
+        updateTable(false);
     }
 
     private void getMethodList() {
@@ -52,6 +53,8 @@ public class CustomTemplateGenerator extends BaseGenerator implements CodeGenera
     public void generateCode() {
         if (CommonUtils.makeJavaFile(javaFileFullPath) == 0) {
             executeJavaCode();
+        } else {
+            dialog.textCode.setText("Can not make this java file!");
         }
         CommonUtils.deleteFileIfExists(classFilePath);
     }
@@ -78,7 +81,7 @@ public class CustomTemplateGenerator extends BaseGenerator implements CodeGenera
         }
     }
 
-    private void updateTable() {
+    private void updateTable(boolean toGenerateCode) {
         if (methodPartList == null || methodPartList.size() == 0) {
             return;
         }
@@ -127,7 +130,9 @@ public class CustomTemplateGenerator extends BaseGenerator implements CodeGenera
         });
         dialog.setTabCustomTemplateModel(tableModel);
 
-        generateCode();
+        if (toGenerateCode) {
+            generateCode();
+        }
     }
 
     @Override
@@ -135,7 +140,7 @@ public class CustomTemplateGenerator extends BaseGenerator implements CodeGenera
         for (MethodPart methodPart : methodPartList) {
             methodPart.setSelected(true);
         }
-        updateTable();
+        updateTable(true);
     }
 
     @Override
@@ -143,7 +148,7 @@ public class CustomTemplateGenerator extends BaseGenerator implements CodeGenera
         for (MethodPart methodPart : methodPartList) {
             methodPart.setSelected(false);
         }
-        updateTable();
+        updateTable(true);
     }
 
     @Override
@@ -151,6 +156,6 @@ public class CustomTemplateGenerator extends BaseGenerator implements CodeGenera
         for (MethodPart methodPart : methodPartList) {
             methodPart.setSelected(!methodPart.isSelected());
         }
-        updateTable();
+        updateTable(true);
     }
 }
