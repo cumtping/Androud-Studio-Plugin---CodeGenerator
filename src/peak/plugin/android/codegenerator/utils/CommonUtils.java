@@ -1,6 +1,5 @@
 package peak.plugin.android.codegenerator.utils;
 
-import java.io.DataInputStream;
 import java.io.File;
 
 /**
@@ -45,31 +44,24 @@ public class CommonUtils {
 
     /**
      * Make java file and product .class file using javac.
+     *
      * @param javaFileFullPath
      * @return
      */
     public static int makeJavaFile(String javaFileFullPath) {
-        int ret = 0;
+        int exitValue = 0;
 
         if (javaFileFullPath != null) {
             deleteFileIfExists(javaFileFullPath.replace(".java", ".class"));
+
+            String command = "cmd /c javac " + javaFileFullPath;
             try {
-                Runtime rt = Runtime.getRuntime();
-                Process ps = rt.exec("cmd /c javac " + javaFileFullPath);
-                ps.waitFor();
-                byte[] out = new byte[1024];
-                DataInputStream dos = new DataInputStream(ps.getInputStream());
-                dos.read(out);
-                String s = new String(out);
-                if (s.indexOf("Exception") > 0) {
-                    ret = -1;
-                }
+                exitValue = ProcessUtils.executeCommandWithExecutors(command, true, true, 1000);
             } catch (Exception e) {
-                ret = -1;
                 e.printStackTrace();
             }
         }
-        return ret;
+        return exitValue;
     }
 
     public static boolean deleteFileIfExists(final String fileName) {
@@ -82,4 +74,6 @@ public class CommonUtils {
         }
         return false;
     }
+
+
 }
