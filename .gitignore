@@ -1,3 +1,4 @@
 #过滤掉out文件夹
 out/
 .idea/
+.idea/workspace.xml
