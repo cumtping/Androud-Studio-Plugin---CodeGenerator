@@ -51,7 +51,8 @@ public class CustomTemplateGenerator extends BaseGenerator implements CodeGenera
 
     @Override
     public void generateCode() {
-        if (CommonUtils.makeJavaFile(javaFileFullPath) == 0) {
+        String fileEncoding = dialog.textProjFileEncoding.getText();
+        if (CommonUtils.makeJavaFile(javaFileFullPath, fileEncoding) == 0) {
             executeJavaCode();
         } else {
             dialog.textCode.setText("Can not make this java file!");

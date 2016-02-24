@@ -48,13 +48,17 @@ public class CommonUtils {
      * @param javaFileFullPath
      * @return
      */
-    public static int makeJavaFile(String javaFileFullPath) {
+    public static int makeJavaFile(String javaFileFullPath, String fileEncoding) {
         int exitValue = 0;
 
         if (javaFileFullPath != null) {
             deleteFileIfExists(javaFileFullPath.replace(".java", ".class"));
 
-            String command = "cmd /c javac " + javaFileFullPath;
+            String fileEncodingParam = "";
+            if (fileEncoding != null && !fileEncoding.trim().equals("")) {
+                fileEncodingParam = " -encoding " + fileEncoding + " ";
+            }
+            String command = "cmd /c javac " + fileEncodingParam + javaFileFullPath;
             try {
                 exitValue = ProcessUtils.executeCommandWithExecutors(command, true, true, 1000);
             } catch (Exception e) {

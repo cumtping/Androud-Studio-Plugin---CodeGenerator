@@ -37,6 +37,7 @@ public class CodeGeneratorDialog extends BaseJDialog{
     private JPanel tabCustomTemplate;
     private JPanel tabHelp;
     private JTextPane textHelp;
+    public JTextField textProjFileEncoding;
 
     private FindViewByMeListener findViewByMeListener;
     private CodeGeneratorListener codeGeneratorListener;

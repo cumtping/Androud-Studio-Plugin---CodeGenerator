@@ -95,17 +95,18 @@ public class NewActivityInstanceGenerator extends BaseGenerator implements CodeG
                 stringBuilder.append("    ").append(fieldPart.getName());
                 String key = getKeyString(fieldPart.getType(), fieldPart.getName());
                 if ("String".equals(fieldPart.getType())) {
-                    stringBuilder.append("= intent.getStringExtra(").append(key);
+                    stringBuilder.append(" = intent.getStringExtra(").append(key);
                 } else if ("int".equals(fieldPart.getType())) {
-                    stringBuilder.append("= intent.getIntExtra(").append(key).append(", defaultValue");
+                    stringBuilder.append(" = intent.getIntExtra(").append(key).append(", defaultValue");
                 } else if ("boolean".equals(fieldPart.getType())) {
-                    stringBuilder.append("= intent.getBooleanExtra(").append(key).append(", defaultValue");
+                    stringBuilder.append(" = intent.getBooleanExtra(").append(key).append(", defaultValue");
                 } else {
-                    stringBuilder.append("= (").append(fieldPart.getType()).append(")intent.getParcelable / Serializable Extra(").append(key);
+                    stringBuilder.append(" = (").append(fieldPart.getType()).append(")intent.getParcelable / Serializable Extra(").append(key);
                 }
+                stringBuilder.append(");\n");
             }
         }
-        stringBuilder.append(");\n}");
+        stringBuilder.append("}");
 
         dialog.setTextCode(stringBuilder.toString());
     }
@@ -129,7 +130,7 @@ public class NewActivityInstanceGenerator extends BaseGenerator implements CodeG
             return;
         }
         for (int i = 0; i < fields.length; i++) {
-            fieldParts.add(new FieldPart(true, fields[i]));
+            fieldParts.add(new FieldPart(false, fields[i]));
         }
     }
 
