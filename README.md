@@ -14,7 +14,9 @@
 　自动编译执行指定的方法，让你随心所欲的定制代码模板。<br><br>
 **使用方法**：<br>
 　1 将CodeGenerater.jar拷贝到android studio安装目录/plugins/目录下即可。<br>
-　2 执行Code - Generate - CodeGenerator菜单打开插件面板。<br>
+　2 执行Code - Generate - CodeGenerator菜单打开插件面板。<br><br>
+**介绍：**<br>
+　http://blog.csdn.net/wenping1980/article/details/50730547 <br>
 
 # English
 Thanks for jaeger. I refer to his plugin: https://github.com/laobie/FindViewByMe 
